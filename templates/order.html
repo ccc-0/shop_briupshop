@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+个人中心
+{% endblock title %}
+
+{% block source %}
+	<link rel="stylesheet" href="{% static 'css/shop_manager.css' %}" type="text/css" />
+{% endblock source %}
+
+{% block content %}
+	<!-- 我的个人中心 -->
+	<div class="shop_member_bd clearfix">
+		<!-- 左边导航 -->
+		<div class="shop_member_bd_left clearfix">
+			
+			<div class="shop_member_bd_left_pic">
+				<a href="javascript:void(0);"><img src="images/avatar.png" /></a>
+			</div>
+			<div class="clear"></div>
+
+			<dl>
+				<dt>我的交易</dt>
+				<dd><span><a href="">已购买商品</a></span></dd>
+				<dd><span><a href="">我的收藏</a></span></dd>
+				<dd><span><a href="">评价管理</a></span></dd>
+			</dl>
+
+			<dl>
+				<dt>我的账户</dt>
+				<dd><span><a href="">个人资料</a></span></dd>
+				<dd><span><a href="">收货地址</a></span></dd>
+			</dl>
+
+		</div>
+		<!-- 左边导航 End -->
+		
+		<!-- 右边购物列表 -->
+		<div class="shop_member_bd_right clearfix">
+			
+			<div class="shop_meber_bd_good_lists clearfix">
+				<div class="title"><h3>订单列表</h3></div>
+				<table>
+					<thead class="tab_title">
+						<th style="width:410px;"><span>商品信息</span></th>
+						<th style="width:100px;"><span>单价</span></th>
+						<th style="width:80px;"><span>数量</span></th>
+						<th style="width:100px;"><span>订单总价</span></th>
+						<th style="width:115px;"><span>状态与操作</span></th>
+					</thead>
+					<tbody>
+                        {% for good in goodslist %}
+						<tr><td colspan="5">
+							<table class="good">
+								<thead >
+									<tr><th colspan="6">
+										<span><strong>订单号码：</strong>{{ good.orders.id }}</span>
+									</th></tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="dingdan_pic"><img src="{{ good.image.url }}" /></td>
+										<td class="dingdan_title"><span><a href="">{{ good.name }}</a></span><br />鞋码:37 颜色:黑色 </td>
+										<td class="dingdan_danjia">￥<strong>{{ good.actual_price }}</strong></td>
+										<td class="dingdan_shuliang">{{ good.nums }}</td>
+										<td class="dingdan_zongjia">￥<strong>{{ all_price }}</strong><br/>(免运费)</td>
+										<td class="digndan_caozuo"><a href="">{{ good.orders.status }}</a></td>
+									</tr>
+								</tbody>
+							</table>
+						</td></tr>
+                        {% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- 右边购物列表 End -->
+
+	</div>
+	<!-- 我的个人中心 End -->
+{% endblock content %}

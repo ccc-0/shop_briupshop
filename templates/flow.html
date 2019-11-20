@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    购物车页面
+{% endblock title %}
+{% block source %}
+	<link rel="stylesheet" href="{% static 'css/shop_gouwuche.css' %}" type="text/css" />
+    <script type="text/javascript" src="{% static 'js/jquery.goodnums.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/shop_gouwuche.js' %}" ></script>
+{% endblock source %}
+
+{% block content %}
+
+	<!-- 购物车 Body -->
+	<div class="shop_gwc_bd clearfix">
+		<!-- 在具体实现的时候，根据情况选择其中一种情况 -->
+{#        {% if not goods_list %}#}
+        {% if goods_list|length == 0 %}  {# 过滤器#}
+{#            {{ name|default:'zhangsan' }}#}
+{#            {{ name|add:5 }}#}
+{#            {{ add }}#}
+		<!-- 购物车为空 -->
+			<div class="empty_cart mb10">
+				<div class="message">
+					<p>购物车内暂时没有商品，您可以<a href="{% url 'goods:index' %}">去首页</a>挑选喜欢的商品</p>
+				</div>
+			</div>
+		<!-- 购物车为空 end-->
+		{% else %}
+		<!-- 购物车有商品 -->
+		<div class="shop_gwc_bd_contents clearfix">
+			<!-- 购物流程导航 -->
+			<div class="shop_gwc_bd_contents_lc clearfix">
+				<ul>
+					<li class="step_a hover_a">确认购物清单</li>
+					<li class="step_b">确认收货人资料及送货方式</li>
+					<li class="step_c">购买完成</li>
+				</ul>
+			</div>
+			<!-- 购物流程导航 End -->
+
+			<!-- 购物车列表 -->
+			<table>
+				<thead>
+					<tr>
+                        <th>选择</th>
+						<th colspan="2"><span>商品</span></th>
+						<th><span>单价(元)</span></th>
+						<th><span>数量</span></th>
+						<th><span>小计</span></th>
+						<th><span>操作</span></th>
+					</tr>
+				</thead>
+				<tbody>
+                    {% for good in goods_list %}
+					<tr>
+                        <td class="gwc_list_check">
+                            <input type="checkbox" checked value="{{ good.goods.id }}" name="{{ good.numbers }}">
+                        </td>
+						<td class="gwc_list_pic">
+                            <a href="{% url 'goods:detail' good.goods.id %}"><img src="{{ good.goods.image.url }}" /></a>
+                        </td>
+						<td class="gwc_list_title">
+                            <a href="{% url 'goods:detail' good.goods.id %}">
+                                <span id="goodid" style="display: none">{{ good.id }}</span>
+                            {{ good.goods.name }}</a>
+                        </td>
+						<td class="gwc_list_danjia">
+                            <span>￥<strong id="danjia_{{ good.id }}">{{ good.goods.actual_price }}</strong></span>
+                        </td>
+						<td class="gwc_list_shuliang">
+                            <span>
+                                <a href="javascript:void(0);" did="danjia_{{ good.id }}" xid="xiaoji_{{ good.id }}"
+                                   ty="-" class="good_num_jian this_good_nums" valId="goods_{{ good.id }}" >-</a>
+                                <input type="text" value="{{ good.numbers }}" id="goods_{{ good.id }}" class="good_nums" />
+                                <a href="javascript:void(0);" did="danjia_{{ good.id }}" xid="xiaoji_{{ good.id }}"
+                                   ty="+" class="good_num_jia this_good_nums" valId="goods_{{ good.id }}">+</a>
+                            </span></td>
+						<td class="gwc_list_xiaoji">
+                            <span>￥<strong id="xiaoji_{{ good.id }}" class="good_xiaojis">
+                            {% widthratio good.goods.actual_price 1 good.numbers %}  <!-- 45/1 *2 -->
+                            </strong></span>
+                        </td>
+						<td class="gwc_list_caozuo">
+                            <a href="">收藏</a>
+                            <a href="javascript:void(0);" class="shop_good_delete" name="{{ good.id }}" id="deletecart">删除</a>
+                        </td>
+					</tr>
+                    {% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="6">
+							<div class="gwc_foot_zongjia">商品总价(不含运费)<span>￥<strong id="good_zongjia">{{ all_price }}</strong></span></div>
+							<div class="clear"></div>
+							<div class="gwc_foot_links">
+								<a href="{% url 'goods:index' %}" class="go">继续购物</a>
+								<a href="javascript:void(0);" class="op" id="addorder">确认并填写订单</a>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+			<!-- 购物车列表 End -->
+		</div>
+		<!-- 购物车有商品 end -->
+        {% endif %}
+    {% csrf_token %}
+	</div>
+	<!-- 购物车 Body End -->
+    <script>
+        //删除
+        $('.shop_good_delete').bind('click',function () {
+            //获取id
+            {#cartid = $('#goodid').text()#}
+            cartid = $(this).attr('name')
+            //获取csrf的value值
+            csrfvalue = $("input:hidden[name='csrfmiddlewaretoken']").val()
+            {#console.log(csrfvalue)#}
+            //Ajax 提交数据$.ajax() $.post() $.get()
+            url = 'http://127.0.0.1:8000/operations/deleteflow/'
+            $.post(url,{
+                flowid:cartid,
+                csrfmiddlewaretoken:csrfvalue
+            },function (data) {
+                // 删除成功后
+                $(".shop_good_delete").goodDelete({zid:'good_zongjia',xclass:'good_xiaojis'});
+            })
+        });
+
+        // 确认并提交订单
+        $('#addorder').bind('click',function () {
+            goodids = ''
+            goodnums =''
+            //获取用户选择的数据  goodid / goodnums
+            $('input:checkbox:checked').each(function () {
+              goodid = $(this).val()
+              goodids += goodid+","
+              goodnum = $(this).parent().siblings('.gwc_list_shuliang').find('input').val() //获取标签属性的值
+              goodnums += goodnum+","
+                console.log(goodnums) //2,3
+            });
+            all_price = {{ all_price }}
+            //是否选择了商品
+            if(goodids ==''){
+                alert('请选择商品')
+            } else{
+                window.location.href = 'http://127.0.0.1:8000/operations/addorder/'+ goodids+"/"+goodnums+"/"+all_price+"/"
+            }
+        })
+
+    </script>
+
+{% endblock content %}

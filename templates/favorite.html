@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+收藏中心
+{% endblock title %}
+{% block source %}
+	<link rel="stylesheet" href="{% static 'css/shop_manager.css' %}" type="text/css" />
+{% endblock source %}
+
+{% block content %}
+	<!-- 我的个人中心 -->
+	<div class="shop_member_bd clearfix">
+		<!-- 左边导航 -->
+		<div class="shop_member_bd_left clearfix">
+			
+			<div class="shop_member_bd_left_pic">
+				<a href="javascript:void(0);"><img src="images/avatar.png" /></a>
+			</div>
+			<div class="clear"></div>
+
+			<dl>
+				<dt>我的交易</dt>
+				<dd><span><a href="">已购买商品</a></span></dd>
+				<dd><span><a href="">我的收藏</a></span></dd>
+				<dd><span><a href="">评价管理</a></span></dd>
+			</dl>
+
+			<dl>
+				<dt>我的账户</dt>
+				<dd><span><a href="">个人资料</a></span></dd>
+				<dd><span><a href="">密码修改</a></span></dd>
+				<dd><span><a href="">收货地址</a></span></dd>
+			</dl>
+
+		</div>
+		<!-- 左边导航 End -->
+		
+		<!-- 右边购物列表 -->
+		<div class="shop_member_bd_right clearfix">
+			
+			<div class="shop_meber_bd_good_lists clearfix">
+				<div class="title"><h3>我的收藏</h3></div>
+				
+				<!-- 商品列表 -->
+			<div class="shop_bd_list_content clearfix">
+				<ul>
+                    {% for good in goods_list %}
+					<li>
+						<dl>
+							<dt><a href="{% url 'goods:detail' good.goods.id %}">
+                                <img src="{{ good.goods.image.url }}" /></a></dt>
+							<dd class="title">
+                                <a href="{% url 'goods:detail' good.goods.id %}">{{ good.goods.name }}</a></dd>
+							<dd class="content">
+								<span class="goods_jiage">￥<strong>{{ good.goods.actual_price }}</strong></span>
+								<span class="goods_chengjiao">最近成交{{ good.goods.sale_nums }}笔</span>
+							</dd>
+						</dl>
+					</li>
+                    {% endfor %}
+				</ul>
+			</div>
+			<div class="clear"></div>
+			<div class="pagination"> 
+				<ul><li><span>首页</span></li>
+					<li><span>上一页</span></li>
+					<li><span class="currentpage">1</span></li>
+					<li><span>下一页</span></li>
+					<li><span>末页</span></li>
+				</ul> 
+			</div>
+			<!-- 商品列表 End -->
+
+			</div>
+		</div>
+		<!-- 右边购物列表 End -->
+
+	</div>
+	<!-- 我的个人中心 End -->
+{% endblock content %}
